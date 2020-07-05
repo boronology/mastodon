@@ -1,0 +1,9 @@
+[Unit]
+Description=daily mastodon maintenance
+RefuseManualStart=no
+RefuseManualStop=yes
+
+[Service]
+Type=oneshot
+WorkingDirectory=/path/to/mastodon
+ExecStart=sh daily_maintenance.sh

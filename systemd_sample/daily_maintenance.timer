@@ -1,0 +1,10 @@
+[Unit]
+Description=daily mastodon maintenance
+
+[Timer]
+OnCalendar=*-*-* 3:21:01
+Persistent=false
+Unit=daily_maintenance.service
+
+[Install]
+WantedBy=timers.target
