@@ -76,8 +76,6 @@ services:
     image: tootsuite/mastodon:v3.1.4
     restart: always
     env_file: .env.production
-    environment:
-      - LD_PRELOAD=/opt/jemalloc/lib/libjemalloc.so
     command: bundle exec sidekiq
     depends_on:
       - db
