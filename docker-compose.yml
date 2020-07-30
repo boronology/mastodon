@@ -2,7 +2,7 @@ version: '3'
 services:
   db:
     restart: always
-    image: postgres:14-alpine
+    image: postgres:14
     shm_size: 256mb
     networks:
       - internal_network
@@ -23,28 +23,28 @@ services:
     volumes:
       - ./redis:/data
 
-  # es:
-  #   restart: always
-  #   image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.10.2
-  #   environment:
-  #     - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-  #     - "cluster.name=es-mastodon"
-  #     - "discovery.type=single-node"
-  #     - "bootstrap.memory_lock=true"
-  #   networks:
-  #      - internal_network
-  #   healthcheck:
-  #      test: ["CMD-SHELL", "curl --silent --fail localhost:9200/_cluster/health || exit 1"]
-  #   volumes:
-  #      - ./elasticsearch:/usr/share/elasticsearch/data
-  #   ulimits:
-  #     memlock:
-  #       soft: -1
-  #       hard: -1
-
+  es:
+    restart: always
+    #image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.8.10
+    image: plusminusio/elasticsearch:7.16
+    environment:
+      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
+      - "cluster.name=es-mastodon"
+      - "discovery.type=single-node"
+      - "bootstrap.memory_lock=true"
+    networks:
+      - internal_network
+    healthcheck:
+      test: ["CMD-SHELL", "curl --silent --fail localhost:9200/_cluster/health || exit 1"]
+    volumes:
+      - ./elasticsearch:/usr/share/elasticsearch/data
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
   web:
     build: .
-    image: tootsuite/mastodon
+    image: boronology/mastodon:v3.5.0
     restart: always
     env_file: .env.production
     command: bash -c "rm -f /mastodon/tmp/pids/server.pid; bundle exec rails s -p 3000"
@@ -59,13 +59,13 @@ services:
     depends_on:
       - db
       - redis
-      # - es
+      - es
     volumes:
       - ./public/system:/mastodon/public/system
 
   streaming:
-    build: .
-    image: tootsuite/mastodon
+    #build: .
+    image: boronology/mastodon:v3.5.0
     restart: always
     env_file: .env.production
     command: node ./streaming
@@ -82,11 +82,11 @@ services:
       - redis
 
   sidekiq:
-    build: .
-    image: tootsuite/mastodon
+    #build: .
+    image: boronology/mastodon:v3.5.0
     restart: always
     env_file: .env.production
-    command: bundle exec sidekiq
+    command: bundle exec sidekiq -c 10
     depends_on:
       - db
       - redis
