@@ -22,28 +22,27 @@ services:
     volumes:
       - ./redis:/data
 
-#  es:
-#    restart: always
-#    image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.8.10
-#    environment:
-#      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-#      - "cluster.name=es-mastodon"
-#      - "discovery.type=single-node"
-#      - "bootstrap.memory_lock=true"
-#    networks:
-#      - internal_network
-#    healthcheck:
-#      test: ["CMD-SHELL", "curl --silent --fail localhost:9200/_cluster/health || exit 1"]
-#    volumes:
-#      - ./elasticsearch:/usr/share/elasticsearch/data
-#    ulimits:
-#      memlock:
-#        soft: -1
-#        hard: -1
-
+  es:
+    restart: always
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.8.10
+    environment:
+      - "ES_JAVA_OPTS=-Xms128m -Xmx128m"
+      - "cluster.name=es-mastodon"
+      - "discovery.type=single-node"
+      - "bootstrap.memory_lock=true"
+    networks:
+      - internal_network
+    healthcheck:
+      test: ["CMD-SHELL", "curl --silent --fail localhost:9200/_cluster/health || exit 1"]
+    volumes:
+      - ./elasticsearch:/usr/share/elasticsearch/data
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
   web:
-    build: .
-    image: tootsuite/mastodon
+    #build: .
+    image: tootsuite/mastodon:v3.2.0
     restart: always
     env_file: .env.production
     command: bash -c "rm -f /mastodon/tmp/pids/server.pid; bundle exec rails s -p 3000"
@@ -57,13 +56,13 @@ services:
     depends_on:
       - db
       - redis
-#      - es
+      - es
     volumes:
       - ./public/system:/mastodon/public/system
 
   streaming:
-    build: .
-    image: tootsuite/mastodon
+    #build: .
+    image: tootsuite/mastodon:v3.2.0
     restart: always
     env_file: .env.production
     command: node ./streaming
@@ -79,8 +78,8 @@ services:
       - redis
 
   sidekiq:
-    build: .
-    image: tootsuite/mastodon
+    #build: .
+    image: tootsuite/mastodon:v3.2.0
     restart: always
     env_file: .env.production
     command: bundle exec sidekiq
