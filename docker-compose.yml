@@ -2,7 +2,7 @@ version: '3'
 services:
   db:
     restart: always
-    image: postgres:14-alpine
+    image: postgres:14
     shm_size: 256mb
     networks:
       - internal_network
@@ -23,28 +23,34 @@ services:
     volumes:
       - ./redis:/data
 
-  # es:
-  #   restart: always
-  #   image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.10.2
-  #   environment:
-  #     - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-  #     - "cluster.name=es-mastodon"
-  #     - "discovery.type=single-node"
-  #     - "bootstrap.memory_lock=true"
-  #   networks:
-  #      - internal_network
-  #   healthcheck:
-  #      test: ["CMD-SHELL", "curl --silent --fail localhost:9200/_cluster/health || exit 1"]
-  #   volumes:
-  #      - ./elasticsearch:/usr/share/elasticsearch/data
-  #   ulimits:
-  #     memlock:
-  #       soft: -1
-  #       hard: -1
+  es:
+    restart: always
+    image: plusminusio/elasticsearch:7.17
+    environment:
+      - "cluster.name=es-mastodon"
+      - "discovery.type=single-node"
+      - "bootstrap.memory_lock=true"
+      - "ES_JAVA_OPTS=-Xms256m -Xmx256m -Des.enforce.bootstrap.checks=true"
+      - "xpack.license.self_generated.type=basic"
+      - "xpack.security.enabled=false"
+      - "xpack.watcher.enabled=false"
+      - "xpack.graph.enabled=false"
+      - "xpack.ml.enabled=false"
+      - "thread_pool.write.queue_size=1000"
+    networks:
+      - internal_network
+    healthcheck:
+      test: ["CMD-SHELL", "curl --silent --fail localhost:9200/_cluster/health || exit 1"]
+    volumes:
+      - ./elasticsearch:/usr/share/elasticsearch/data
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
 
   web:
     build: .
-    image: ghcr.io/mastodon/mastodon:v3.5.8
+    image: boronology/mastodon:v3.5.8
     restart: always
     env_file: .env.production
     command: bash -c "rm -f /mastodon/tmp/pids/server.pid; bundle exec rails s -p 3000"
@@ -59,13 +65,13 @@ services:
     depends_on:
       - db
       - redis
-      # - es
+      - es
     volumes:
       - ./public/system:/mastodon/public/system
 
   streaming:
-    build: .
-    image: ghcr.io/mastodon/mastodon:v3.5.8
+    #build: .
+    image: boronology/mastodon:v3.5.8
     restart: always
     env_file: .env.production
     command: node ./streaming
@@ -82,8 +88,8 @@ services:
       - redis
 
   sidekiq:
-    build: .
-    image: ghcr.io/mastodon/mastodon:v3.5.8
+    #build: .
+    image: boronology/mastodon:v3.5.8
     restart: always
     env_file: .env.production
     command: bundle exec sidekiq
