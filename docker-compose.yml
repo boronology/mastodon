@@ -82,7 +82,7 @@ services:
     image: tootsuite/mastodon:v3.2.1
     restart: always
     env_file: .env.production
-    command: bundle exec sidekiq
+    command: bundle exec sidekiq -c 10
     depends_on:
       - db
       - redis
