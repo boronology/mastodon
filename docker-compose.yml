@@ -24,9 +24,10 @@ services:
 
   es:
     restart: always
-    image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.8.10
+    #image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.8.10
+    image: plusminusio/elasticsearch:7.9.3
     environment:
-      - "ES_JAVA_OPTS=-Xms128m -Xmx128m"
+      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
       - "cluster.name=es-mastodon"
       - "discovery.type=single-node"
       - "bootstrap.memory_lock=true"
