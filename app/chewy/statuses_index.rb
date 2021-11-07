@@ -19,7 +19,7 @@ class StatusesIndex < Chewy::Index
     tokenizer: {
       kuromoji: {
         type: 'kuromoji_tokenizer',
-        #mode: 'search',
+        mode: 'search',
       },
     },
     analyzer: {
