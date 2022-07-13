@@ -3,54 +3,28 @@
 class StatusesIndex < Chewy::Index
   include FormattingHelper
 
-  settings index: { refresh_interval: '30s' }, analysis: {
-    filter: {
-      english_stop: {
-        type: 'stop',
-        stopwords: '_english_',
-      },
-      english_stemmer: {
-        type: 'stemmer',
-        language: 'english',
-      },
-      english_possessive_stemmer: {
-        type: 'stemmer',
-        language: 'possessive_english',
-      },
-    },
+  //from https://github.com/highemerly/mastodon/blob/handon-production/app/chewy/statuses_index.rb
+  settings index: { refresh_interval: '15m' }, analysis: {
     tokenizer: {
-      kuromoji: {
+      kuromoji_user_dict: {
         type: 'kuromoji_tokenizer',
-        mode: 'search',
+        user_dictionary: 'userdic.txt',
       },
     },
     analyzer: {
       content: {
-        tokenizer: 'kuromoji',
         type: 'custom',
-        char_filter: %w(
-          icu_normalizer
-          html_strip
-          kuromoji_iteration_mark
-        ),
+        tokenizer: 'kuromoji_user_dict',
         filter: %w(
-          english_possessive_stemmer
-          lowercase
-          asciifolding
-          kuromoji_stemmer
-          kuromoji_number
           kuromoji_baseform
-          icu_normalizer
+          kuromoji_stemmer
           cjk_width
-          english_stop
-          english_stemmer
+          lowercase
         ),
       },
     },
   }
 
-  # We do not use delete_if option here because it would call a method that we
-  # expect to be called with crutches without crutches, causing n+1 queries
   index_scope ::Status.unscoped.kept.without_reblogs.includes(:media_attachments, :preloadable_poll)
 
   crutch :mentions do |collection|
