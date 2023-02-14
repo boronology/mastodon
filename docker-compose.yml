@@ -25,12 +25,19 @@ services:
 
   es:
     restart: always
-    image: plusminusio/elasticsearch:7.16
+    image: plusminusio/elasticsearch:7.17
     environment:
-      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
+      #- "ES_JAVA_OPTS=-Xms256m -Xmx256m"
       - "cluster.name=es-mastodon"
       - "discovery.type=single-node"
       - "bootstrap.memory_lock=true"
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m -Des.enforce.bootstrap.checks=true"
+      - "xpack.license.self_generated.type=basic"
+      - "xpack.security.enabled=false"
+      - "xpack.watcher.enabled=false"
+      - "xpack.graph.enabled=false"
+      - "xpack.ml.enabled=false"
+      - "thread_pool.write.queue_size=1000"
     networks:
       - internal_network
     healthcheck:
