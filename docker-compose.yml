@@ -59,6 +59,8 @@ services:
     image: boronology/mastodon:v4.1.2
     restart: always
     env_file: .env.production
+    environment:
+      - "MAGICK_TIME_LIMIT=30"
     command: bash -c "rm -f /mastodon/tmp/pids/server.pid; bundle exec rails s -p 3000"
     networks:
       - external_network
