@@ -56,7 +56,7 @@ services:
 
   web:
     build: .
-    image: ghcr.io/mastodon/mastodon:v4.1.6
+    image: boronology/mastodon:v4.1.6
     restart: always
     env_file: .env.production
     environment:
@@ -79,7 +79,7 @@ services:
 
   streaming:
     build: .
-    image: ghcr.io/mastodon/mastodon:v4.1.6
+    image: boronology/mastodon:v4.1.6
     restart: always
     env_file: .env.production
     command: node ./streaming
@@ -97,7 +97,7 @@ services:
 
   sidekiq:
     build: .
-    image: ghcr.io/mastodon/mastodon:v4.1.6
+    image: boronology/mastodon:v4.1.6
     restart: always
     env_file: .env.production
     command: bundle exec sidekiq -c 10
