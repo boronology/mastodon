@@ -74,6 +74,7 @@ services:
       # - es
     volumes:
       - ./public/system:/mastodon/public/system
+      - ./policy.xml:/etc/ImageMagick-6/policy.xml:ro
 
   streaming:
     build: .
