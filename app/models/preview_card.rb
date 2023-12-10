@@ -159,7 +159,7 @@ class PreviewCard < ApplicationRecord
         original: {
           pixels: 230_400, # 640x360px
           file_geometry_parser: FastGeometryParser,
-          convert_options: '-coalesce',
+          convert_options: '-coalesce +profile \'!icc,*\'',
           blurhash: BLURHASH_OPTIONS,
         },
       }
