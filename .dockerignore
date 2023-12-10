@@ -26,3 +26,4 @@ chart
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+.snapshots
