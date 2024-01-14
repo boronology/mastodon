@@ -20,6 +20,8 @@ const messages = defineMessages({
   toggle_visible: { id: 'media_gallery.toggle_visible', defaultMessage: '{number, plural, one {Hide image} other {Hide images}}' },
 });
 
+export const MAX_MEDIA_ATTACHMENTS = 16;
+
 class Item extends PureComponent {
 
   static propTypes = {
@@ -97,7 +99,8 @@ class Item extends PureComponent {
       width = 100;
     }
 
-    if (size === 4 || (size === 3 && index > 0)) {
+    //偶数枚のときはすべて50％。奇数枚のときは1枚目のみ100％で残りは50％
+    if (size % 2 === 0 || (size > 2 && size % 2 === 1 && index > 0)){
       height = 50;
     }
 
@@ -304,13 +307,13 @@ class MediaGallery extends PureComponent {
       style.aspectRatio = '3 / 2';
     }
 
-    const size     = media.take(4).size;
+    const size     = media.take(MAX_MEDIA_ATTACHMENTS).size;
     const uncached = media.every(attachment => attachment.get('type') === 'unknown');
 
     if (this.isFullSizeEligible()) {
       children = <Item standalone autoplay={autoplay} onClick={this.handleClick} attachment={media.get(0)} lang={lang} displayWidth={width} visible={visible} />;
     } else {
-      children = media.take(4).map((attachment, i) => <Item key={attachment.get('id')} autoplay={autoplay} onClick={this.handleClick} attachment={attachment} index={i} lang={lang} size={size} displayWidth={width} visible={visible || uncached} />);
+      children = media.take(MAX_MEDIA_ATTACHMENTS).map((attachment, i) => <Item key={attachment.get('id')} autoplay={autoplay} onClick={this.handleClick} attachment={attachment} index={i} lang={lang} size={size} displayWidth={width} visible={visible || uncached} />);
     }
 
     if (uncached) {
