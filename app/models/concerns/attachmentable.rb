@@ -5,7 +5,7 @@ require 'mime/types/columnar'
 module Attachmentable
   extend ActiveSupport::Concern
 
-  MAX_MATRIX_LIMIT = 33_177_600 # 7680x4320px or approx. 847MB in RAM
+  MAX_MATRIX_LIMIT = 60_242_560 # 9520x6328px = max resolution of SIGMA fp L
   GIF_MATRIX_LIMIT = 921_600    # 1280x720px
 
   # For some file extensions, there exist different content
